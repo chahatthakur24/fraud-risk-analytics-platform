@@ -1,4 +1,26 @@
 # =============================================================================
+# AUTO-DOWNLOAD MODELS FROM GOOGLE DRIVE (for Streamlit Cloud)
+# =============================================================================
+import os
+import urllib.request
+
+MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
+
+MODEL_FILES = {
+    "best_threshold.pkl":      "13xjWnX860a7JDnp1oGGWpoFInyRVmv4L",
+    "standard_scaler.pkl":     "1XLF5Ah6kmet91gXa0lRBlOfR_ch9tOc8",
+    "robust_scaler.pkl":       "13uZQQTc0YWtmY1n9K14KySXpF-NnyEUb",
+    "logistic_regression.pkl": "1y5W0Rd0qDydMl2b2Abg3755nXtL85d6v",
+    "random_forest.pkl":       "1xbbr8TH0sI1PK88xauC3vYDXN56HdHjI",
+    "xgboost.pkl":             "1AyOhMsE5EfuD_uSWq4RTSPaGIQxb_48o",
+}
+
+for filename, file_id in MODEL_FILES.items():
+    dest = os.path.join(MODELS_DIR, filename)
+    if not os.path.exists(dest):
+        url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        urllib.request.urlretrieve(url, dest)# =============================================================================
 # CREDIT CARD FRAUD DETECTION — Streamlit Dashboard
 # Author: Chahat Thakur | github.com/chahatthakur24
 # =============================================================================
