@@ -1,0 +1,106 @@
+// =============================================================================
+// CREDIT CARD FRAUD DETECTION — Power BI DAX Measures (10 Measures)
+// Author: Chahat Thakur | github.com/chahatthakur24
+// =============================================================================
+// HOW TO USE: In Power BI Desktop → Modeling → New Measure → paste each measure
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 01: Total Transactions
+// ─────────────────────────────────────────────────────────────────────────────
+Total Transactions =
+COUNTROWS(Transactions)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 02: Total Fraud Cases
+// ─────────────────────────────────────────────────────────────────────────────
+Total Fraud Cases =
+CALCULATE(
+    COUNTROWS(Transactions),
+    Transactions[Class] = 1
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 03: Fraud Rate %
+// ─────────────────────────────────────────────────────────────────────────────
+Fraud Rate % =
+DIVIDE(
+    CALCULATE(COUNTROWS(Transactions), Transactions[Class] = 1),
+    COUNTROWS(Transactions),
+    0
+) * 100
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 04: Average ML Fraud Probability
+// ─────────────────────────────────────────────────────────────────────────────
+Avg ML Fraud Probability =
+AVERAGE(Transactions[ML_Prob])
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 05: Total Fraud Exposure ($)
+// ─────────────────────────────────────────────────────────────────────────────
+Total Fraud Exposure =
+CALCULATE(
+    SUM(Transactions[Amount]),
+    Transactions[Class] = 1
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 06: Average Risk Score
+// ─────────────────────────────────────────────────────────────────────────────
+Avg Risk Score =
+AVERAGE(Transactions[Risk_Score])
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 07: High Risk Alert Count
+// ─────────────────────────────────────────────────────────────────────────────
+High Risk Alerts =
+CALCULATE(
+    COUNTROWS(Transactions),
+    Transactions[Risk_Tier] = "High"
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 08: ML Model Precision %
+// (of all transactions flagged as fraud by ML, how many are actual fraud)
+// ─────────────────────────────────────────────────────────────────────────────
+ML Precision % =
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(Transactions),
+        Transactions[Is_Fraud_ML] = TRUE,
+        Transactions[Class] = 1
+    ),
+    CALCULATE(
+        COUNTROWS(Transactions),
+        Transactions[Is_Fraud_ML] = TRUE
+    ),
+    0
+) * 100
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 09: ML Model Recall %
+// (of all actual fraud cases, how many did ML catch)
+// ─────────────────────────────────────────────────────────────────────────────
+ML Recall % =
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(Transactions),
+        Transactions[Is_Fraud_ML] = TRUE,
+        Transactions[Class] = 1
+    ),
+    CALCULATE(
+        COUNTROWS(Transactions),
+        Transactions[Class] = 1
+    ),
+    0
+) * 100
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEASURE 10: False Positive Count
+// ─────────────────────────────────────────────────────────────────────────────
+False Positives =
+CALCULATE(
+    COUNTROWS(Transactions),
+    Transactions[Is_Fraud_ML] = TRUE,
+    Transactions[Class] = 0
+)
